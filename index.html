@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Talks Daily</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        h1, h2 {
+            margin: 0;
+            padding-bottom: 10px;
+        }
+        .search-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #search-input {
+            padding: 10px;
+            width: 60%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #search-button {
+            padding: 10px 20px;
+            border: none;
+            background: #333;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .talk {
+            background: #fff;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .talk-time {
+            font-weight: bold;
+            color: #555;
+        }
+        .talk-title {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        .talk-speakers {
+            font-style: italic;
+            color: #777;
+            margin-bottom: 10px;
+        }
+        .talk-categories {
+            margin-bottom: 10px;
+        }
+        .talk-categories span {
+            background: #333;
+            color: #fff;
+            padding: 3px 7px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tech Talks Daily</h1>
+    </header>
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search by category...">
+            <button id="search-button">Search</button>
+        </div>
+        <div id="schedule"></div>
+    </div>
+
+    <script>
+        const talks = [
+            {
+                title: "The Future of JavaScript Frameworks",
+                speakers: ["John Doe"],
+                categories: ["JavaScript", "Web Development"],
+                description: "A deep dive into the latest trends in JavaScript frameworks and what to expect in the coming years."
+            },
+            {
+                title: "Building Scalable APIs with Node.js",
+                speakers: ["Jane Smith", "Peter Jones"],
+                categories: ["Node.js", "APIs", "Backend"],
+                description: "Learn how to design and build robust and scalable APIs using Node.js and Express."
+            },
+            {
+                title: "Mastering CSS Grid and Flexbox",
+                speakers: ["Alice Johnson"],
+                categories: ["CSS", "Frontend", "Web Design"],
+                description: "A practical guide to mastering modern CSS layouts with Grid and Flexbox."
+            },
+            {
+                title: "Introduction to Machine Learning with Python",
+                speakers: ["Bob Williams"],
+                categories: ["Python", "Machine Learning", "Data Science"],
+                description: "An introductory session on the fundamentals of machine learning using Python and popular libraries."
+            },
+            {
+                title: "Securing Your Web Applications",
+                speakers: ["Charlie Brown", "David Miller"],
+                categories: ["Security", "Web Development"],
+                description: "Learn about common web security vulnerabilities and how to protect your applications from them."
+            },
+            {
+                title: "The Power of Serverless Computing",
+                speakers: ["Emily Davis"],
+                categories: ["Serverless", "Cloud", "Architecture"],
+                description: "An exploration of serverless architectures and how they can revolutionize the way we build and deploy applications."
+            }
+        ];
+
+        const schedule = [
+            { time: "10:00 AM - 11:00 AM", talkIndex: 0 },
+            { time: "11:10 AM - 12:10 PM", talkIndex: 1 },
+            { time: "12:20 PM - 01:20 PM", talkIndex: 2 },
+            { time: "01:20 PM - 02:20 PM", title: "Lunch Break" },
+            { time: "02:20 PM - 03:20 PM", talkIndex: 3 },
+            { time: "03:30 PM - 04:30 PM", talkIndex: 4 },
+            { time: "04:40 PM - 05:40 PM", talkIndex: 5 },
+        ];
+
+        const scheduleContainer = document.getElementById('schedule');
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+
+        function renderSchedule(filteredTalks) {
+            scheduleContainer.innerHTML = '';
+            schedule.forEach(item => {
+                const talkElement = document.createElement('div');
+                talkElement.classList.add('talk');
+
+                if (item.title === "Lunch Break") {
+                    talkElement.innerHTML = `
+                        <div class="talk-time">${item.time}</div>
+                        <div class="talk-title">${item.title}</div>
+                    `;
+                } else {
+                    const talk = filteredTalks[item.talkIndex];
+                    if(talk) {
+                        talkElement.innerHTML = `
+                            <div class="talk-time">${item.time}</div>
+                            <div class="talk-title">${talk.title}</div>
+                            <div class="talk-speakers">By: ${talk.speakers.join(', ')}</div>
+                            <div class="talk-categories">
+                                ${talk.categories.map(cat => `<span>${cat}</span>`).join('')}
+                            </div>
+                            <div class="talk-description">${talk.description}</div>
+                        `;
+                    }
+                }
+                scheduleContainer.appendChild(talkElement);
+            });
+        }
+        
+        function filterTalks() {
+            const searchTerm = searchInput.value.toLowerCase();
+            if (!searchTerm) {
+                renderSchedule(talks);
+                return;
+            }
+            const filteredTalks = talks.map(talk => {
+                const hasCategory = talk.categories.some(cat => cat.toLowerCase().includes(searchTerm));
+                return hasCategory ? talk : null;
+            });
+            renderSchedule(filteredTalks);
+        }
+
+
+        searchButton.addEventListener('click', filterTalks);
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                filterTalks();
+            }
+        });
+
+        renderSchedule(talks);
+
+    </script>
+</body>
+</html>
